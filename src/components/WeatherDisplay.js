@@ -1,6 +1,6 @@
 import React from 'react';
 
-function WeatherDisplay() {
+function WeatherDisplay({weatherData, isLoading, error}) {
     return (
         <div>
             <p>This is WeatherDisplay</p>
