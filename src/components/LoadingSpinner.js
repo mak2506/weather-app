@@ -2,8 +2,10 @@ import React from 'react';
 
 function LoadingSpinner() {
     return (
-        <div>
-            <p>This is LoadingSpinner</p>
+        <div className="loading-spinner">
+            {/* A simple div that can be styled into a spinner */}
+            <div className="spinner"></div>
+            <p>Loading weather data...</p>
         </div>
     );
 }
