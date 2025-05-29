@@ -18,3 +18,84 @@ code {
     monospace;
 }
 
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: aqua;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(360deg);}
+}
+
+/* src/index.css (add to the end) */
+
+/* Weather Card Styles */
+.weather-card {
+  border: 1px solid #eee;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.weather-card h2 {
+  margin-top: 0;
+  color: #444;
+  font-size: 1.8rem;
+}
+
+.weather-card img {
+  width: 80px;
+  height: 80px;
+  margin: 10px auto;
+  display: block; /* Ensures image is centered */
+}
+
+.weather-card .temperature {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 10px 0;
+}
+
+.weather-card .description {
+  font-size: 1.2rem;
+  color: #666;
+  text-transform: capitalize; /* Makes the first letter of each word uppercase */
+  margin-bottom: 20px;
+}
+
+.weather-card .details p {
+  margin: 5px 0;
+  color: #555;
+}
+
+/* Error Message Styles */
+.error-message {
+  color: #d9534f; /* Red color */
+  font-weight: bold;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f2dede;
+  border: 1px solid #ebccd1;
+  border-radius: 5px;
+}
+
+/* Add some margin to the SearchBar for spacing */
+form {
+  margin-bottom: 25px;
+}
+

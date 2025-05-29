@@ -1,7 +1,8 @@
 import './index.css';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import SearchBar from './components/SearchBar';
 import WeatherDisplay from './components/WeatherDisplay';
+import { fetchWeatherByCity } from './api/openWeatherMap';
 
 function App() {
   // 1. State for the city the user wants to search for
@@ -15,6 +16,30 @@ function App() {
 
   // 4. State to store any error messages
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const getWeather = async() => {
+      // Don't fetch if the city is empty (e.g., on initial load or clear search)
+      if (!city) {
+        setWeatherData(null);
+        setError(null);
+        return;
+      }
+      setIsLoading(true);//set loading to true before fetching
+      setError(null);//to set all previous errors to null
+      try {
+        const data = fetchWeatherByCity(city);
+        setWeatherData(data);
+      } catch(err) {
+      // If an error occurs, set the error state
+        setError(err.message || 'Failed to fetch weather data.');
+        setWeatherData(null); // Clear weather data on error
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    getWeather();
+  }, [city]);
 
   // This function will be passed to the SearchBar component
     // It will update the 'city' state when a search is performed
