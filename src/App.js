@@ -17,6 +17,7 @@ function App() {
   // 4. State to store any error messages
   const [error, setError] = useState(null);
 
+
   useEffect(() => {
     const getWeather = async() => {
       // Don't fetch if the city is empty (e.g., on initial load or clear search)
@@ -28,7 +29,7 @@ function App() {
       setIsLoading(true);//set loading to true before fetching
       setError(null);//to set all previous errors to null
       try {
-        const data = fetchWeatherByCity(city);
+        const data = await fetchWeatherByCity(city);
         setWeatherData(data);
       } catch(err) {
       // If an error occurs, set the error state
