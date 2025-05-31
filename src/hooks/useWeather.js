@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { fetchWeatherByCity } from "../api/openWeatherMap";
+import { fetchWeatherByCity, fetchForecastByCoords } from "../api/openWeatherMap";
 
 const useWeather = (city)=> {
     const [weatherData, setWeatherData] = useState(null);
+    const [forecastData, setForecastData] = useState(null)
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
     useEffect(() => {
-        const getWeather = async()=> {
+        const getWeatherAndForecast = async() => {
         if (!city) {
             setWeatherData(null);
             setError(null);
@@ -16,8 +18,16 @@ const useWeather = (city)=> {
             setError(null);
 
             try {
-            const data = await fetchWeatherByCity(city);
-            setWeatherData(data);
+            const currentWeatherData = await fetchWeatherByCity(city);
+            setWeatherData(currentWeatherData);
+
+            if (currentWeatherData && currentWeatherData.coord) {
+                const {lat, lon} = currentWeatherData.coord;
+                const forecastForFiveDays = await fetchForecastByCoords(lat, lon);
+                setForecastData(forecastForFiveDays);
+            } else {
+                setForecastData(null);
+            }
         } catch (err) {
             setError(err.message || 'Failed to fetch weather data.');
             setWeatherData(null);
@@ -25,9 +35,9 @@ const useWeather = (city)=> {
             setIsLoading(false);
         }
     };
-    getWeather();
+    getWeatherAndForecast();
     }, [city]);
-    return {weatherData, isLoading, error};
+    return {weatherData, forecastData, isLoading, error};
 };
 
 export default useWeather;
