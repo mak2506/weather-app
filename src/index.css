@@ -189,3 +189,63 @@ form {
   }
 }
 
+/* src/index.css (add to the end) */
+
+/* Recent Cities Container */
+.recent-cities {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f0f8ff; /* Light blue background */
+  border: 1px solid #cce5ff;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.recent-cities h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.recent-cities-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px; /* Space between buttons */
+}
+
+.recent-city-button,
+.clear-history-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px; /* Pill shape */
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.recent-city-button:hover,
+.clear-history-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.recent-city-button:active,
+.clear-history-button:active {
+  transform: translateY(0);
+}
+
+.clear-history-button {
+  background-color: #dc3545; /* Red color for clear button */
+  margin-left: 10px; /* Space it from city buttons */
+}
+
+.clear-history-button:hover {
+  background-color: #c82333;
+}
+
