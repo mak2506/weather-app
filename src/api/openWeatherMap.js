@@ -66,3 +66,33 @@ export const fetchForecastByCoords = async (lat, lon) => {
         throw new Error(error.message || 'Network connection lost or an unexpected error occurred for forecast.');
     }
 }
+
+export const fetchWeatherByCoords = async (lat, lon) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL_WEATHER}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      let errorMessage = 'An unknown error occurred while fetching current weather data by coordinates.';
+
+      if (response.status === 401) {
+        errorMessage = 'Authentication error: Invalid or inactive API key for location weather. Please check your OpenWeatherMap API key.';
+      } else if (response.status >= 500) {
+        errorMessage = 'Server error: OpenWeatherMap API is currently unavailable. Please try again later.';
+      } else if (errorData && errorData.message) {
+        errorMessage = `API Error (Location Weather): ${errorData.message}`;
+      } else {
+        errorMessage = `Failed to fetch location weather data. Status: ${response.status} ${response.statusText || ''}.`;
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Fetch Error (Location Weather):', error.message);
+    throw new Error(error.message || 'Network connection lost or an unexpected error occurred for location weather.');
+  }
+};
