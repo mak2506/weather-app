@@ -10,6 +10,7 @@ const LOCAL_STORAGE_KEY = 'weatherAppRecentCities';
 
 function App() {
   const [cityInput, setCityInput] = useState('');
+  const [greetingMessage, setGreetingMessage] = useState('');
 
   // Get data, loading, error, AND the new fetch functions from useWeather
   const { weatherData, forecastData, isLoading, error, fetchByCity, fetchByCoords } = useWeather();
@@ -23,6 +24,57 @@ function App() {
       return [];
     }
   });
+
+  useEffect(() =>  {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      setGreetingMessage('Good Morning!');
+    } else if (hour < 18) {
+      setGreetingMessage('Good Afternoon!');
+    } else {
+      setGreetingMessage('Good Evening!');
+    }
+    if (!weatherData && !isLoading && !error) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            console.log("Auto-fetching weather for:", latitude, longitude);
+            fetchByCoords({ lat: latitude, lon: longitude });
+          },
+          (geoError) => {
+            let geoErrorMessage = 'Unable to retrieve your location.';
+            switch (geoError.code) {
+              case geoError.PERMISSION_DENIED:
+                geoErrorMessage = 'Location access denied. Please enable location services in your browser settings.';
+                break;
+              case geoError.POSITION_UNAVAILABLE:
+                geoErrorMessage = 'Location information is unavailable.';
+                break;
+              case geoError.TIMEOUT:
+                geoErrorMessage = 'The request to get user location timed out.';
+                break;
+              default:
+                geoErrorMessage = 'An unknown geolocation error occurred.';
+            }
+            console.warn("Geolocation error:", geoErrorMessage);
+            // ONLY display the alert, DO NOT fetch for a default city
+            alert(`Geolocation Error: ${geoErrorMessage}\nWeather data cannot be displayed without location.`);
+            // You might want to clear any existing weatherData here if relevant
+            // setWeatherData(null); // If you have a setter for weatherData state
+            // setError(geoErrorMessage); // If you want to show this error in your app UI
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      } else {
+        // Browser does not support Geolocation
+        alert('Geolocation is not supported by your browser. Weather data cannot be displayed.');
+        // DO NOT fetch for a default city
+        // setWeatherData(null);
+        // setError('Geolocation not supported by your browser.');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -96,7 +148,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>My Weather App</h1>
+      <h1>{greetingMessage}</h1>
       <SearchBar onSearch={handleSearch} />
 
       {/* GEOLOCATION BUTTON */}
