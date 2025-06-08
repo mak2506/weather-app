@@ -25,7 +25,7 @@ function App() {
     }
   });
 
-  useEffect(() =>  {
+  useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
       setGreetingMessage('Good Morning!');
@@ -148,48 +148,52 @@ function App() {
 
   return (
     <div className="App">
-      <h1>{greetingMessage}</h1>
-      <SearchBar onSearch={handleSearch} />
+      <button className="mode-toggle" onclick="toggleMode()">Toggle Mode</button>
+      <div id="dynamic-elements"></div>
+      <div className="container">
+        <h1 className="greet">{greetingMessage}</h1>
+        <SearchBar onSearch={handleSearch} />
 
-      {/* GEOLOCATION BUTTON */}
-      <button
+        {/* GEOLOCATION BUTTON */}
+        {/* <button
         onClick={handleGetLocationWeather}
         className="get-location-button"
         disabled={isLoading} // Disable while useWeather is loading
       >
         {isLoading ? 'Getting Weather...' : 'Get My Location Weather'}
-      </button>
+      </button> */}
 
-      {/* Existing Recent Cities Display */}
-      {recentCities.length > 0 && (
-        <div className="recent-cities">
-          <h4>Recent Searches:</h4>
-          <div className="recent-cities-list">
-            {recentCities.map((city, index) => (
+        {/* Existing Recent Cities Display */}
+        {recentCities.length > 0 && (
+          <div className="recent-cities">
+            <h4>Recent Searches:</h4>
+            <div className="recent-cities-list">
+              {recentCities.map((city, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleRecentCityClick(city)}
+                  className="recent-city-button"
+                >
+                  {city}
+                </button>
+              ))}
               <button
-                key={index}
-                onClick={() => handleRecentCityClick(city)}
-                className="recent-city-button"
+                onClick={handleClearRecentCities}
+                className="clear-history-button"
               >
-                {city}
+                Clear History
               </button>
-            ))}
-            <button
-              onClick={handleClearRecentCities}
-              className="clear-history-button"
-            >
-              Clear History
-            </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <WeatherDisplay
-        weatherData={weatherData}
-        isLoading={isLoading}
-        error={error}
-      />
-      <WeatherForecast forecastData={forecastData} />
+        <WeatherDisplay
+          weatherData={weatherData}
+          isLoading={isLoading}
+          error={error}
+        />
+        <WeatherForecast forecastData={forecastData} />
+      </div>
     </div>
   );
 }
