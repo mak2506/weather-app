@@ -34,7 +34,7 @@ A responsive and interactive React.js application that provides real-time weathe
 
 ----------------------------------------------------------------------------------------------------------
 
-# Here are some reference images
+## Here are some reference images
 ![Weather app image of a cloudy day](./src/images/weather-app-cloud.png)
 ![Weather app image of a sunny day](./src/images/weather-app-day.png)
 ![Weather app image of a cloudy night](./src/images/weather-app.png)
