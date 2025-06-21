@@ -40,7 +40,7 @@ function WeatherDisplay({ weatherData, isLoading, error }) {
     return (
         <div className='weather-card'>
             <h2>Current Weather In {name}</h2>
-            <div class="weather-card-in">
+            <div className="weather-card-in">
                 <div className='weather-card-left'>
                     {iconUrl && <img src={iconUrl} alt={description} />}
                     <p className="temperature">{temperature}°C</p> {/* Temperature */}

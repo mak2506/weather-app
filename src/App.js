@@ -25,14 +25,31 @@ function App() {
     }
   });
 
+  const [isDarkMode, setDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  const [isDayTime, setDayTime] = useState(true);
+  const [showStars, canShowStars] = useState(false);
+
+  const [showClouds, canShowClouds] = useState(false);
+
+
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour < 12) {
+    if (hour < 12 && hour >= 5) {
       setGreetingMessage('Good Morning!');
     } else if (hour < 18) {
       setGreetingMessage('Good Afternoon!');
     } else {
       setGreetingMessage('Good Evening!');
+      setDayTime(false);
+      canShowStars(true);
+      setDarkMode(true);
     }
     if (!weatherData && !isLoading && !error) {
       if (navigator.geolocation) {
@@ -146,10 +163,85 @@ function App() {
     }
   }, [fetchByCoords, setCityInput]); // Dependencies for useCallback
 
+
+  useEffect(() => {
+    if (isDarkMode) {
+     document.documentElement.style.setProperty('--background-grad', 'linear-gradient(to bottom,rgb(45, 46, 47),rgb(15, 15, 17))');
+      localStorage.setItem('theme', 'dark');
+    } else {
+     document.documentElement.style.setProperty('--background-grad', 'linear-gradient(to bottom, #3253ea, #7d93f6)');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => {
+    setDarkMode(prevMode => !prevMode);
+  }
+
+  const mainSectionClasses = [
+    'main-weather-content-section',
+    isDarkMode ? 'night' : 'day', // Base day/night visual based on theme toggle
+  ];
+
+  useEffect(() => {
+    if (weatherData && weatherData.weather && weatherData.weather[0]) {
+      const weatherMain = weatherData.weather[0].main.toLowerCase();
+      // Define conditions for showing clouds
+      const conditionsWithClouds = ['clouds', 'rain', 'drizzle', 'thunderstorm', 'snow', 'mist', 'fog', 'haze', 'squall', 'tornado'];
+      if (conditionsWithClouds.includes(weatherMain)) {
+        canShowClouds(true); // Set state to true if cloudy
+      } else {
+        canShowClouds(false); // Set state to false otherwise
+      }
+    } else {
+      canShowClouds(false); // If no weather data, no clouds
+    }
+    
+  }, [weatherData]);
+
   return (
     <div className="App">
-      <button className="mode-toggle" onclick="toggleMode()">Toggle Mode</button>
-      <div id="dynamic-elements"></div>
+      {/* <button className="mode-toggle" id="themeMode">Toggle Mode</button> */}
+      <button onClick={toggleTheme} className="theme-toggle-button">
+        {isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+      </button>
+      <div id="dynamic-elements">
+        {/* {isDarkMode && } */}
+        {(isDayTime && !showClouds) && <div className="sun"></div>}
+         {showStars && [...Array(20)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="star"
+                            style={{
+                                top: `${Math.random() * 100}%`,
+                                left: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * 5}s`
+                            }}
+                        ></div>
+                    ))
+          }
+          {(!showClouds && showStars) && <div className="moon"></div>}
+       {showClouds && (
+    <>
+        <div id="cloud1" className="cloud">
+            <span>&#9729;</span> {/* You can put the emoji directly in the div or keep span */}
+        </div>
+        <div id="cloud2" className="cloud">
+            <span>&#9729;</span>
+        </div>
+        <div id="cloud3" className="cloud">
+            <span>&#9729;</span>
+        </div>
+         <div id="cloud4" className="cloud">
+            <span>&#9729;</span>
+        </div>
+         <div id="cloud5" className="cloud">
+            <span>&#9729;</span>
+        </div>
+        {/* Add more as needed */}
+    </>
+)}
+      </div>
       <div className="container">
         <h1 className="greet">{greetingMessage}</h1>
         <SearchBar onSearch={handleSearch} />

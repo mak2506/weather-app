@@ -1,8 +1,12 @@
+:root {
+  --background-grad: linear-gradient(to bottom, #3253ea, #7d93f6);
+}
+
 body {
   margin: 0;
   font-family: "Roboto", sans-serif;
   color: #fff;
-  background: linear-gradient(to bottom, #6fb1fc, #4364f7);
+  background: var(--background-grad);
   background-size: cover;
   background-repeat: no-repeat;
   transition: background 1s ease-in-out;
@@ -34,6 +38,70 @@ code {
 .greet {
   text-align: center;
 }
+
+.dynamic-elements {
+    position: absolute; /* Or relative, if it's the parent of clouds. */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Crucial: Hides clouds when they drift off-screen */
+    pointer-events: none; /* Allows clicks to pass through to elements below */
+    z-index: 1; /* Ensure sky elements are above background but below content */
+}
+
+
+.sun, .moon, .star {
+      position: absolute;
+      pointer-events: none;
+    }
+
+     .sun {
+      top: 50px;
+      right: 50px;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, #FFD700, #FFA500);
+      border-radius: 50%;
+      animation: rotateSun 20s linear infinite;
+    }
+
+    /* .cloud {
+      /* top: 50px; */
+      /* left: 100px; */
+      /* width: 200px; */
+      /* height: 60px; */
+      /* opacity: 0.7; */
+      /* animation: floatCloud 30s linear infinite; 
+      animation: floatCloud 10s linear infinite alternate;
+      z-index: -1;
+    }
+
+    #cloud1 {
+      color: white;
+      font-size: 45vh;
+      
+    }
+    #cloud2 {
+      color: #666667;
+      font-size: 60vh;
+     
+    }
+    #cloud3 {
+       color: #b0b6bd;
+      font-size: 35vh;
+    } */
+    
+
+   @keyframes rotateSun {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* @keyframes floatCloud {
+      0% { left: -50px; }
+      100% { left: 10%; }
+    } */
 
 .container {
   max-width: 900px;
@@ -89,7 +157,7 @@ input[type="text"] {
 .recent-cities h4 {
   margin-top: 0;
   margin-bottom: 15px;
-  color: #333;
+  color: #f1f0f0;
   font-size: 1.1rem;
 }
 
@@ -303,3 +371,109 @@ form {
 
 /* src/index.css (add to the end) */
 
+/* Base styles for all cloud elements */
+.cloud {
+    position: absolute;
+    display: flex; /* To center the emoji/content if it's smaller than the div */
+    justify-content: center;
+    align-items: center;
+    line-height: 1; /* Remove extra space around emoji */
+    z-index: -1; /* Keep them behind other content */
+    opacity: 0.8; /* Slight transparency */
+    /* Add a filter for subtle glow/blur in light/dark mode if desired */
+    /* filter: drop-shadow(0 0 5px rgba(0,0,0,0.1)); */
+}
+
+/* Individual Cloud Styles and Animations */
+
+#cloud1 {
+    top: 5%; /* Vertical position */
+    left: 0%; /* Start slightly off-screen left */
+    color: #ececec; /* Use CSS variable for theme adaptability */
+    font-size: 35vh;
+    animation: driftCloud 45s linear infinite, bobCloud 4.5s ease-in-out infinite alternate;
+    animation-delay: 0s, 5s; /* Different delays for each animation */
+    transform: scale(0.9); /* Slightly smaller for perceived depth */
+}
+
+#cloud2 {
+    top: 0%;
+    left: 60%;
+    color:  #bebdbd;
+    font-size: 50vh;
+    animation: driftCloud 30s linear infinite, bobCloud 5s ease-in-out infinite alternate;
+    animation-delay: 5s, 0s;
+    transform: scale(1.1); /* Slightly larger */
+}
+
+#cloud3 {
+    top: 55%;
+    left: 75%;
+    color:  #f0f6f8;
+    font-size: 25vh;
+    animation: driftCloud 35s linear infinite, bobCloud 3.5s ease-in-out infinite alternate;
+    animation-delay: 10s, 1s;
+    transform: scale(0.8); /* Smallest */
+}
+
+#cloud4 {
+    top: 25%;
+    left: 5%;
+    color:  #ffffff;
+    font-size: 55vh;
+    animation: driftCloud 55s linear infinite, bobCloud 7s ease-in-out infinite alternate;
+    animation-delay: 5s, 1s;
+    transform: scale(0.8); /* Smallest */
+}
+
+#cloud5 {
+    top: 45%;
+    left: 5%;
+    color:  #4a4747;
+    font-size: 38vh;
+    animation: driftCloud 40s linear infinite, bobCloud 5s ease-in-out infinite alternate;
+    animation-delay: 0s, 1s;
+    transform: scale(2.5); /* Smallest */
+}
+
+/* --- Keyframe Animations --- */
+
+/* Horizontal Drift Animation */
+@keyframes driftCloud {
+    0% { transform: translateX(0); } /* Start at its initial 'left' position (e.g., -10%) */
+   100% { transform: translateX(90%); } /*Drift fully across the viewport + its own width */
+}
+
+/* Vertical Bobbing Animation */
+@keyframes bobCloud {
+    0% { transform: translateY(2%), translateX(0%); }
+    50% { transform: translateY(-2%), translateX(1%);  }
+    100% {transform: translateY(2%), translateX(0%); }
+}
+
+
+ .star {
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 2s infinite alternate;
+    }
+
+    .star:nth-child(1) { top: 50px; left: 60px; }
+    .star:nth-child(2) { top: 120px; left: 200px; }
+    .star:nth-child(3) { top: 180px; left: 300px; }
+
+        @keyframes twinkle {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
+
+  .moon {
+      top: 50px;
+      right: 50px;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, #ddd, #aaa);
+      border-radius: 50%;
+    }
