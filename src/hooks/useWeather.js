@@ -1,73 +1,102 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
 import { fetchWeatherByCity, fetchWeatherByCoords, fetchForecastByCoords } from '../api/openWeatherMap';
 
-const useWeather = () => { // Removed cityOrCoords from initial arguments
-  const [weatherData, setWeatherData] = useState(null);
-  const [forecastData, setForecastData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+const useWeather = () => {
+  const [searchCity, setSearchCity] = useState('');
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const queryClient = useQueryClient();
 
-  const [fetchTrigger, setFetchTrigger] = useState(null);
-
-  useEffect(() => {
-    const getWeatherAndForecast = async () => {
-      // Clear data and errors if no valid input is provided to the trigger
-      if (!fetchTrigger || (typeof fetchTrigger === 'string' && fetchTrigger.trim() === '')) {
-        setWeatherData(null);
-        setForecastData(null);
-        setError(null);
-        setIsLoading(false); // Ensure loading is off if no trigger
-        return;
+  // Single weather query that handles both city and location searches
+  const weatherQuery = useQuery(
+    ['weather', searchCity || currentLocation],
+    async () => {
+      if (searchCity) {
+        return await fetchWeatherByCity(searchCity);
+      } else if (currentLocation) {
+        return await fetchWeatherByCoords(currentLocation.lat, currentLocation.lon);
       }
+      throw new Error('No search criteria provided');
+    },
+    {
+      enabled: !!(searchCity || currentLocation),
+      retry: 2,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
 
-      setIsLoading(true);
-      setError(null);
+  // Forecast query
+  const forecastQuery = useQuery(
+    ['forecast', weatherQuery.data?.coord],
+    async () => {
+      const coords = weatherQuery.data?.coord;
+      if (!coords) throw new Error('No coordinates available');
+      return await fetchForecastByCoords(coords.lat, coords.lon);
+    },
+    {
+      enabled: !!weatherQuery.data?.coord,
+      retry: 2,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 10 * 60 * 1000, // 10 minutes for forecast
+      cacheTime: 15 * 60 * 1000, // 15 minutes
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
 
-      let currentWeatherData = null;
-
-      try {
-        if (typeof fetchTrigger === 'string') {
-          // If trigger is a string, fetch by city name
-          currentWeatherData = await fetchWeatherByCity(fetchTrigger);
-        } else if (fetchTrigger && typeof fetchTrigger === 'object' && fetchTrigger.lat != null && fetchTrigger.lon != null) {
-          // If trigger is an object with lat/lon, fetch by coordinates
-          currentWeatherData = await fetchWeatherByCoords(fetchTrigger.lat, fetchTrigger.lon);
-        } else {
-          // Invalid trigger type
-          throw new Error('Invalid input for weather fetching: must be a city name or {lat, lon} object.');
-        }
-
-        setWeatherData(currentWeatherData);
-
-        if (currentWeatherData && currentWeatherData.coord) {
-          const { lat, lon } = currentWeatherData.coord;
-          const fiveDayForecast = await fetchForecastByCoords(lat, lon);
-          setForecastData(fiveDayForecast);
-        } else {
-          setForecastData(null);
-        }
-
-      } catch (err) {
-        setError(err.message || 'Failed to fetch weather data.');
-        setWeatherData(null);
-        setForecastData(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getWeatherAndForecast();
-  }, [fetchTrigger]);
-
+  // Fetch weather by city
   const fetchByCity = useCallback((city) => {
-    setFetchTrigger(city);
+    console.log('fetchByCity called with:', city); // Debug log
+    if (typeof city === 'string' && city.trim()) {
+      setSearchCity(city.trim());
+      setCurrentLocation(null); // Clear location-based search
+    }
   }, []);
 
+  // Fetch weather by coordinates
   const fetchByCoords = useCallback((coords) => {
-    setFetchTrigger(coords);
+    console.log('fetchByCoords called with:', coords); // Debug log
+    if (coords && typeof coords === 'object' && 
+        typeof coords.lat === 'number' && typeof coords.lon === 'number') {
+      setCurrentLocation(coords);
+      setSearchCity(''); // Clear city-based search
+    }
   }, []);
 
-  return { weatherData, forecastData, isLoading, error, fetchByCity, fetchByCoords }; // Return new functions
+  // Clear all data
+  const clearData = useCallback(() => {
+    setSearchCity('');
+    setCurrentLocation(null);
+    queryClient.clear();
+  }, [queryClient]);
+
+  // Invalidate and refetch current data
+  const refetchData = useCallback(() => {
+    weatherQuery.refetch();
+    if (forecastQuery.data) {
+      forecastQuery.refetch();
+    }
+  }, [weatherQuery, forecastQuery]);
+
+  return {
+    weatherData: weatherQuery.data,
+    forecastData: forecastQuery.data,
+    isLoading: weatherQuery.isLoading || forecastQuery.isLoading,
+    error: weatherQuery.error?.message || forecastQuery.error?.message || null,
+    fetchByCity,
+    fetchByCoords,
+    clearData,
+    refetchData,
+    // Additional query states for more granular control
+    isWeatherLoading: weatherQuery.isLoading,
+    isForecastLoading: forecastQuery.isLoading,
+    weatherError: weatherQuery.error?.message,
+    forecastError: forecastQuery.error?.message,
+  };
 };
 
-export default useWeather;
+export default useWeather; 
