@@ -5,9 +5,9 @@ const THEME_KEY = 'theme';
 function getInitialTheme() {
   const savedTheme = localStorage.getItem(THEME_KEY);
   if (savedTheme) return savedTheme;
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark';
-  }
+  // if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  //   return 'dark';
+  // }
   return 'light';
 }
 

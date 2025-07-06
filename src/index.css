@@ -595,7 +595,7 @@ form {
   color: #fff;
   font-size: 8vw;
   opacity: 0.92;
-  filter: blur(1.5px) drop-shadow(0 8px 24px #b0c4de88) !important;
+  filter: drop-shadow(0 8px 24px #b0c4de88) !important;
   animation: driftCloud 18s linear infinite alternate, bobCloud 6s ease-in-out infinite, cloudFloat 14s ease-in-out infinite, cloudWobble 8s ease-in-out infinite !important;
   transition: opacity 0.8s, filter 0.5s;
   z-index: 1 !important;
@@ -726,7 +726,7 @@ form {
 @media (max-width: 600px) {
   .cloud {
     font-size: 18vw !important;
-    filter: blur(2.5px) drop-shadow(0 4px 12px #b0c4de88) !important;
+    filter: drop-shadow(0 4px 12px #b0c4de88) !important;
     z-index: 0 !important;
   }
 }

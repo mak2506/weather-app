@@ -73,7 +73,7 @@ function App() {
   // Initialize app: set greeting message and auto-fetch weather for user's location
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour >= 18 || hour < 5) {
+    if (hour >= 18 && hour < 5) {
       setDayTime(false);
       setShowStars(true);
     } else {
